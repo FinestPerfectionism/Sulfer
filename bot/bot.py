@@ -180,7 +180,7 @@ class Sulfer(commands.Bot):
         super().__init__(
             chunk_guilds_at_startup = True,
             case_insensitive        = True,
-            command_prefix          = commands.when_mentioned_or("."),
+            command_prefix          = commands.when_mentioned_or("-"),
             help_command            = None,
             intents                 = Intents.all(),
             status                  = Status.online,
@@ -260,9 +260,9 @@ class Sulfer(commands.Bot):
 
         await self.set_name_style(
             guild,
-            font_id   = DisplayNameFont.zilla_slab if branded else DisplayNameFont.default,
-            effect_id = DisplayNameEffect.gradient if branded else DisplayNameEffect.solid,
-            colors    = ["FFFFFF", "000000"]       if branded else ["FFFFFF", "FFFFFF"],
+            font_id   = DisplayNameFont.cherry_bomb if branded else DisplayNameFont.default,
+            effect_id = DisplayNameEffect.gradient  if branded else DisplayNameEffect.solid,
+            colors    = ["000000", "FFFFFF"]        if branded else ["FFFFFF", "FFFFFF"],
         )
 
     # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
