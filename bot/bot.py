@@ -297,7 +297,7 @@ class Sulfer(commands.Bot):
         self.db = await connect(str(db_path))
 
         def read_schema() -> str:
-            return Path("schemas/info.sql").read_text(encoding = "utf-8")
+            return Path("schemas/information.sql").read_text(encoding = "utf-8")
 
         schema = await to_thread(read_schema)
         await self.db.executescript(schema)

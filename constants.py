@@ -81,6 +81,13 @@ BOTWORKS_MENTION = f"<@&{BOTWORKS_ROLE_ID}>"
 
 BOT_ERRORS_LOG_CHANNEL_ID = 1537572340228038740
 
+# ╰・server-guidelines | 1537572621258854481
+# ・central | 1537573830074310708
+# ╰・changes | 1537574045636370472
+# ╰・status | 1537574204973645914
+# ╰・moderators-guidelines | 1537577701228019752
+# ╰・developers-guidelines | 1537579157075136633
+
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 # Emoji Strings
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
