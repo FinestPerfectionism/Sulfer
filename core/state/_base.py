@@ -17,6 +17,13 @@ class Connection(AiosqliteConnection):
     def execute(self, sql : Template, /) -> Result[Cursor]:
         return super().execute("?".join(sql.strings), sql.values)
 
+    @override
+    def executemany(self, templates : list[Template], /) -> Result[Cursor]:
+        if not templates:
+            return super().executemany("", [])
+
+        return super().executemany("?".join(templates[0].strings), [t.values for t in templates])
+
 
 async def connect(database : str | Path) -> Connection:
     raw_connection = await aiosqlite_connect(database)
