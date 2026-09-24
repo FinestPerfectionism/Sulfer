@@ -6,7 +6,7 @@ from os import getenv
 
 from dotenv import load_dotenv
 
-from bot import Cordex, log
+from bot import Sulfer, log
 
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 # Main Script
@@ -21,7 +21,7 @@ basic_config(
 
 TOKEN = getenv("TOKEN")
 
-bot = Cordex()
+bot = Sulfer()
 
 
 async def _main() -> None:

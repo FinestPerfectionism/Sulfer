@@ -8,7 +8,7 @@ from discord import AllowedMentions, Guild, Member, TextChannel, User
 from discord.app_commands import AppCommandError, BotMissingPermissions
 from discord.ext import commands
 
-from bot import Context, Cordex, Interaction
+from bot import Context, Interaction, Sulfer
 from bot.ui import Container, LayoutView, TextDisplay, VisibleLargeSeparator
 from constants import (
     BOT_ERRORS_LOG_CHANNEL_ID,
@@ -28,7 +28,7 @@ from core.exceptions import (
     send_unimplemented_command,
 )
 from core.responses import FormatOverride, format_send
-from core.utilities import codeblock, format_command, format_now, format_table
+from core.utilities import codeblock, format_now, format_table
 
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 # Errors Logging
@@ -37,7 +37,7 @@ from core.utilities import codeblock, format_command, format_now, format_table
 
 @final
 class ErrorLogger(commands.Cog):
-    def __init__(self, bot : Cordex) -> None:
+    def __init__(self, bot : Sulfer) -> None:
         super().__init__()
         self.bot = bot
         self.bot.tree.error(self.command_error_handler)
@@ -123,7 +123,7 @@ class ErrorLogger(commands.Cog):
 
             table = format_table(
                 {
-                    "Command"      : format_command(interaction.client, qualified_name),
+                    "Command"      : f"<{qualified_name}:{command_id}>",
                     "Command Name" : qualified_name,
                     "Command ID"   : str(command_id),
                 },
@@ -280,6 +280,6 @@ class ErrorLogger(commands.Cog):
         )
 
 
-async def setup(bot : Cordex) -> None:
+async def setup(bot : Sulfer) -> None:
     cog = ErrorLogger(bot)
     await bot.add_cog(cog)

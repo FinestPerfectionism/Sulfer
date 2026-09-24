@@ -13,7 +13,7 @@ from discord.ext import commands
 from discord.utils import format_dt, get, utcnow
 
 import constants
-from bot import Context, ContextOrInteraction, Cordex, Interaction, ui
+from bot import Context, ContextOrInteraction, Interaction, Sulfer, ui
 from constants import (
     ACCEPTED_EMOJI,
     COLOR_BLACK,
@@ -31,7 +31,6 @@ from core.paginator import NamedPaginator, PageData, UnnamedPaginator
 from core.responses import format_message, format_send
 from core.utilities import (
     codeblock,
-    format_command,
     format_now,
     format_table,
     format_values,
@@ -50,7 +49,7 @@ type Lambda = Callable[[], Awaitable[object]]
 
 async def run_bo_eval(ctx : Context, body : str) -> None:
     env : dict[str, object] = {
-        "Cordex" : Cordex,
+        "Sulfer" : Sulfer,
 
         "bot"  : ctx.bot,
         "ctx"  : ctx,
@@ -94,7 +93,6 @@ async def run_bo_eval(ctx : Context, body : str) -> None:
         "truncate"       : truncate,
         "format_dt"      : format_dt,
         "format_now"     : format_now,
-        "format_command" : format_command,
         "format_values"  : format_values,
         "format_message" : format_message,
         "format_send"    : format_send,
@@ -164,7 +162,7 @@ async def run_bo_eval(ctx : Context, body : str) -> None:
         "PageData"         : PageData,
     }
 
-    # ⸻ I would put significantly more thought into a check for this but Cordex doesn't use enough prefix commands to warrant it.
+    # ⸻ I would put significantly more thought into a check for this but Sulfer doesn't use enough prefix commands to warrant it.
 
     if not is_bot_owner(ctx.author):
         await ctx.send(

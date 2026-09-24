@@ -1,11 +1,11 @@
 # pyright: reportImportCycles = false
 
-from .bot import Context, ContextOrInteraction, Cordex, Interaction, log
+from .bot import Context, ContextOrInteraction, Interaction, Sulfer, log
 
 __all__ = (
     "Context",
     "ContextOrInteraction",
-    "Cordex",
     "Interaction",
+    "Sulfer",
     "log",
 )

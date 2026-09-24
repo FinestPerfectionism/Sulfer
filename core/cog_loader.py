@@ -6,7 +6,7 @@ from pkgutil import walk_packages
 # Cog Management
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 
-log = get_logger("Cordex")
+log = get_logger("Sulfer")
 
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 # Cog Discovery

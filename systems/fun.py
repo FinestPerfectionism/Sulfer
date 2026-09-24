@@ -5,7 +5,7 @@ from typing import final
 from discord import Message
 from discord.ext import commands
 
-from bot import Cordex
+from bot import Sulfer
 
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 # Fun
@@ -14,7 +14,7 @@ from bot import Cordex
 
 @final
 class Fun(commands.Cog):
-    def __init__(self, bot : Cordex) -> None:
+    def __init__(self, bot : Sulfer) -> None:
         super().__init__()
         self.bot = bot
 
@@ -46,6 +46,6 @@ class Fun(commands.Cog):
                         await message.reply(content = choice(responses))
 
 
-async def setup(bot : Cordex) -> None:
+async def setup(bot : Sulfer) -> None:
     cog = Fun(bot)
     await bot.add_cog(cog)

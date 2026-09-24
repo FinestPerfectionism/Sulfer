@@ -8,7 +8,7 @@ from discord.ext.commands import (  # pyright: ignore[reportMissingTypeStubs]
     command as prefix_command,
 )
 
-from bot import Context, Cordex, Interaction
+from bot import Context, Interaction, Sulfer
 from core.exceptions import BadPermissionsCommand
 from core.utilities import is_bot_owner
 
@@ -41,15 +41,11 @@ class BotOwnerCommands(
     name        = "bot-owner",
     description = "Bot Owner only —— Bot owner commands.",
 ):
-    def __init__(self, bot : Cordex) -> None:
+    def __init__(self, bot : Sulfer) -> None:
         super().__init__()
         self.bot  = bot
         self.tree = bot.tree
 
-    message : Group = Group(
-        name        = "message",
-        description = "Bot owner message commands.",
-    )
     state   : Group = Group(
         name        = "state",
         description = "Bot owner state commands.",
@@ -158,6 +154,6 @@ class BotOwnerCommands(
         await run_bo_style_set(interaction)
 
 
-async def setup(bot : Cordex) -> None:
+async def setup(bot : Sulfer) -> None:
     cog = BotOwnerCommands(bot)
     await bot.add_cog(cog)

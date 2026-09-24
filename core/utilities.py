@@ -5,7 +5,7 @@ from discord import Member, User
 from discord.app_commands import check
 from discord.utils import format_dt, utcnow
 
-from bot import Cordex, Interaction
+from bot import Interaction
 from constants import DEVELOPER_IDS
 
 from .exceptions import UnimplementedCommand
@@ -46,31 +46,6 @@ def unimplemented[F]() -> Callable[[F], F]:
 
 def format_now(style : _Styles = "F", /) -> str:
     return format_dt(utcnow(), style)
-
-# ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
-# format_command
-# ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
-
-
-def format_command(bot : Cordex, path : str, /) -> str:
-    parts : list[str] = path.strip().split()
-
-    if not parts:
-        return "`Invalid Command`"
-
-    root_name : str        = parts[0]
-    root_id   : int | None = None
-
-    commands = bot.get_api_commands_cache()
-
-    for cmd in commands:
-        if cmd.name == root_name:
-            root_id = cmd.id
-            break
-
-    if root_id:
-        return f"</{path}:{root_id}>"
-    return f"`/{path}`"
 
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 # format_table

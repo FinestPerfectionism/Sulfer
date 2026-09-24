@@ -2,6 +2,7 @@
 
 # ⸻ It's going to complain about 'Interaction'.
 
+
 from asyncio import to_thread
 from contextlib import suppress
 from inspect import getsource
@@ -18,9 +19,8 @@ from types import (
 )
 from typing import Self, TypedDict, Unpack, cast, final, override
 
-from discord import Embed, File, Guild, Intents, Member, Message, Status, User
+from discord import Embed, File, Guild, Intents, Message, Status, User
 from discord import Interaction as BaseInteraction
-from discord.app_commands import AppCommand, Command, CommandTree
 from discord.ext import commands
 from discord.ext.commands import (  # pyright: ignore[reportMissingTypeStubs]
     Context as BaseContext,
@@ -32,9 +32,9 @@ from discord.http import Route
 
 from constants import DENIED_EMOJI, DEVELOPER_IDS, DisplayNameEffect, DisplayNameFont
 from core.cog_loader import discover_cogs
-from core.state import Config, Connection, Restriction, connect, is_restrictable
+from core.state import Connection, connect
 
-from .types import AnnotatedCommand, LambdaInter, NameStyleResult
+from .types import LambdaInter, NameStyleResult
 from .ui import Button, LayoutView, Modal, View, button
 
 InspectableObject = (
@@ -52,7 +52,7 @@ InspectableObject = (
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 
 
-log = get_logger("Cordex")
+log = get_logger("Sulfer")
 
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 # Context and Interaction Classes
@@ -61,11 +61,11 @@ log = get_logger("Cordex")
 
 class _ContextKwargs(TypedDict, total = False):
     message : Message
-    bot     : Cordex
+    bot     : Sulfer
     view    : StringView
 
 
-class _ContextClass(BaseContext["Cordex"]):
+class _ContextClass(BaseContext["Sulfer"]):
     def __init__(self, **kwargs : Unpack[_ContextKwargs]) -> None:
         super().__init__(**kwargs)
 
@@ -165,73 +165,29 @@ class _ContextClass(BaseContext["Cordex"]):
                 await reference_message.delete()
 
 
-class _Tree(CommandTree):
-    @override
-    async def interaction_check(self, interaction : Interaction) -> bool:  # pyright: ignore[reportIncompatibleMethodOverride]
-        command = interaction.command
-        client  = interaction.client
-        guild   = interaction.guild
-        user    = interaction.user
-
-        if not isinstance(command, Command):
-            return True
-
-        if guild is None or not isinstance(user, Member):
-            return True
-
-        if not is_restrictable(command):
-            return True
-
-        restriction = client.get_restriction(guild.id, command.qualified_name)
-        if not restriction:
-            return True
-
-        if user == guild.owner:
-            return True
-
-        user_is_bot_owner = user in client.developers
-        if user_is_bot_owner:
-            return True
-
-        if restriction.allows(user):
-            return True
-
-        await interaction.response.send_message(
-           f"{DENIED_EMOJI} **Failed to run command!**\n"
-            "You are not authorized to run this command.\n"
-            "-# Bad request.",
-            ephemeral = True,
-        )
-        return False
-
-
 type Context              = _ContextClass
-type Interaction          = BaseInteraction[Cordex]
+type Interaction          = BaseInteraction[Sulfer]
 type ContextOrInteraction = Interaction | Context
 
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
-# Cordex Class
+# Sulfer Class
 # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 
 
 @final
-class Cordex(commands.Bot):
+class Sulfer(commands.Bot):
     def __init__(self) -> None:
         super().__init__(
             chunk_guilds_at_startup = True,
+            case_insensitive        = True,
             command_prefix          = commands.when_mentioned_or("."),
             help_command            = None,
             intents                 = Intents.all(),
             status                  = Status.online,
-            tree_cls                = _Tree,
         )
         self.version : float = 1.0
 
         self.db : Connection
-
-        self._commands_cache     : list[AnnotatedCommand]             = []
-        self._api_commands_cache : list[AppCommand]                   = []
-        self._restrictions_cache : dict[tuple[int, str], Restriction] = {}
 
         self.restarting : bool = False
 
@@ -240,13 +196,6 @@ class Cordex(commands.Bot):
     @property
     def id(self) -> int | None:
         return self.user.id if self.user else None
-
-    # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
-    # Configuration
-    # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
-
-    def config(self, guild : Guild) -> Config:
-        return Config(self, guild)
 
     # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
     # Name Styles
@@ -321,7 +270,7 @@ class Cordex(commands.Bot):
     # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
 
     @override
-    async def get_context[ContextT : BaseContext[Cordex]](
+    async def get_context[ContextT : BaseContext[Sulfer]](
         self,
         origin : Message        | BaseInteraction,
         *,
@@ -375,79 +324,6 @@ class Cordex(commands.Bot):
                 log.info("Loaded cog %s", cog)
             except Exception:
                 log.exception("Failed to load cog %s", cog)
-
-        # ⸻ Cache
-
-        self.build_commands_cache()
-        await self.build_api_commands_cache()
-        await self.build_restrictions_cache()
-
-    # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
-    # Commands Cache
-    # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
-
-    def build_commands_cache(self) -> None:
-        self._commands_cache = list(self.tree.walk_commands())
-
-    async def build_api_commands_cache(self) -> None:
-        self._api_commands_cache = await self.tree.fetch_commands()
-
-    def get_commands_cache(self) -> list[AnnotatedCommand]:
-        if not self._commands_cache:
-            self.build_commands_cache()
-        return self._commands_cache
-
-    def get_api_commands_cache(self) -> list[AppCommand]:
-        return self._api_commands_cache
-
-    def rebuild_commands_cache(self) -> None:
-        self._commands_cache.clear()
-        self.build_commands_cache()
-
-    async def rebuild_api_commands_cache(self) -> None:
-        self._api_commands_cache.clear()
-        await self.build_api_commands_cache()
-
-    # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
-    # Restrictions Cache
-    # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
-
-    async def build_restrictions_cache(self) -> None:
-        grouped : dict[tuple[int, str], tuple[set[int], set[int]]] = {}
-
-        async with self.db.execute(
-            t"SELECT guild_id, command_name, target_type, target_id FROM CommandRestrictions",
-        ) as cursor:
-            rows = await cursor.fetchall()
-
-        for row in rows:
-            guild_id     = cast("int", row[0])
-            command_name = cast("str", row[1])
-            target_type  = cast("str", row[2])
-            target_id    = cast("int", row[3])
-
-            users, roles = grouped.setdefault((guild_id, command_name), (set(), set()))
-
-            if target_type == "role":
-                roles.add(target_id)
-            else:
-                users.add(target_id)
-
-        self._restrictions_cache = {
-            key : Restriction(frozenset(users), frozenset(roles))
-            for key, (users, roles) in grouped.items()
-        }
-
-    def get_restriction(self, guild_id : int, command_name : str, /) -> Restriction | None:
-        return self._restrictions_cache.get((guild_id, command_name))
-
-    def set_restriction(self, guild_id : int, command_name : str, restriction : Restriction | None, /) -> None:
-        key = (guild_id, command_name)
-
-        if restriction is None:
-            self._restrictions_cache.pop(key, None)
-        else:
-            self._restrictions_cache[key] = restriction
 
     # ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
     # close
